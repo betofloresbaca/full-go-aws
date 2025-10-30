@@ -1,0 +1,3 @@
+{
+    "app": "go run ./cmd/cdk-infra/main.go"
+}
