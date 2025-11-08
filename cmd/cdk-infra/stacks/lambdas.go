@@ -14,6 +14,7 @@ type LambdasStackProps struct {
 
 func newFunction(name string, zipPath string, stack awscdk.Stack) awslambda.Function {
 	return awslambda.NewFunction(stack, jsii.String(name), &awslambda.FunctionProps{
+		FunctionName: jsii.String(name),
 		Runtime:      awslambda.Runtime_PROVIDED_AL2023(),
 		Handler:      jsii.String("main"),
 		Code:         awslambda.Code_FromAsset(jsii.String(zipPath), nil),

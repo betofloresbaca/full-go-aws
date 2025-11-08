@@ -1,4 +1,3 @@
-// File: cmd/cdk-infra/main.go
 package main
 
 import (
@@ -8,12 +7,12 @@ import (
 
 func main() {
 	app := awscdk.NewApp(nil)
-	env := &awscdk.Environment{
-		// Configure your AWS Account and Region
-		// Or leave nil to use default CLI profile
-		// Account: jsii.String(os.Getenv("CDK_DEFAULT_ACCOUNT")),
-		// Region:  jsii.String(os.Getenv("CDK_DEFAULT_REGION")),
-	}
+	env := &awscdk.Environment{}
+	stacks.DbStack(app, "DbStack", &stacks.DbStackProps{
+		StackProps: awscdk.StackProps{
+			Env: env,
+		},
+	})
 	stacks.LambdasStack(app, "LambdasStack", &stacks.LambdasStackProps{
 		StackProps: awscdk.StackProps{
 			Env: env,
