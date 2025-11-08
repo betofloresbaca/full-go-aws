@@ -50,6 +50,15 @@ func Deploy() error {
 	return cdkDeployCmd.Run()
 }
 
+func Bootstrap() error {
+	mg.Deps(Build)
+	fmt.Println("Bootstrapping CDK...")
+	cdkBootstrapCmd := exec.Command("cdk", "bootstrap")
+	cdkBootstrapCmd.Stdout = os.Stdout
+	cdkBootstrapCmd.Stderr = os.Stderr
+	return cdkBootstrapCmd.Run()
+}
+
 func buildLambdas() error {
 	lambdas := getLambdaNames()
 	for _, name := range lambdas {
