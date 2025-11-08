@@ -24,13 +24,7 @@ func init() {
 }
 
 func callLambda(ctx context.Context) (string, error) {
-	input := &lambda.GetAccountSettingsInput{}
-	resp, err := client.GetAccountSettings(ctx, input)
-	if err != nil {
-		return "", err
-	}
-	output, _ := json.Marshal(resp.AccountUsage)
-	return string(output), nil
+	return "Example response", nil
 }
 
 func handleRequest(ctx context.Context, event events.SQSEvent) (string, error) {
