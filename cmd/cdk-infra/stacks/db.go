@@ -12,11 +12,7 @@ type DbStackProps struct {
 }
 
 func DbStack(scope constructs.Construct, id string, props *DbStackProps) awscdk.Stack {
-	var sprops awscdk.StackProps
-	if props != nil {
-		sprops = props.StackProps
-	}
-	stack := awscdk.NewStack(scope, &id, &sprops)
+	stack := awscdk.NewStack(scope, &id, &props.StackProps)
 
 	// Create Users DynamoDB Table
 	usersTable := awsdynamodb.NewTable(stack, jsii.String("UsersTable"), &awsdynamodb.TableProps{
