@@ -30,6 +30,5 @@ go.work.sum
 # Bin directory
 bin/
 
-# Editor/IDE
-# .idea/
-# .vscode/
+# Telegram Examples
+telegram-examples/*
