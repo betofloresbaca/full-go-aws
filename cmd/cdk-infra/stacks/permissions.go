@@ -29,6 +29,7 @@ func PermissionsStack(scope constructs.Construct, id string, props *PermissionsS
 	roles := make(map[string]awsiam.IRole)
 	roleLogicalIds := []string{
 		"TelegramApiAuthorizerRole",
+		"TelegramApiGatewayRole",
 	}
 	for _, roleLogicalId := range roleLogicalIds {
 		resource := cfnTemplate.GetResource(jsii.String(roleLogicalId))

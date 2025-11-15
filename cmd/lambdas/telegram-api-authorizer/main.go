@@ -13,20 +13,18 @@ import (
 	"github.com/betofloresbaca/expenses-manager/pkg/clients"
 )
 
-const HeaderName = "X-Telegram-Bot-Api-Secret-Token"
-
 func handleRequest(ctx context.Context, event events.APIGatewayV2CustomAuthorizerV2Request) (
 	events.APIGatewayV2CustomAuthorizerSimpleResponse, error) {
 	jsonEvent, _ := json.Marshal(event)
 	log.Println("Received event:", string(jsonEvent))
-	headerToken, ok := event.Headers[HeaderName]
-	log.Println("Got header token:", headerToken)
-	if !ok || headerToken == "" {
+	if len(event.IdentitySource) == 0 || event.IdentitySource[0] == "" {
 		return events.APIGatewayV2CustomAuthorizerSimpleResponse{
 			IsAuthorized: false,
 			Context:      map[string]interface{}{"error": "missing or invalid token"},
 		}, nil
 	}
+	requestToken := event.IdentitySource[0]
+	log.Println("Got header token:", requestToken)
 
 	// Obtener el nombre del parámetro desde la variable de entorno
 	parameterName := os.Getenv("TELEGRAM_SECRET_PARAM")
@@ -49,15 +47,19 @@ func handleRequest(ctx context.Context, event events.APIGatewayV2CustomAuthorize
 	})
 	if err != nil {
 		log.Println("Authorization failed:", err)
+	} else {
+		paramBytes, _ := json.Marshal(parameter)
+		log.Println("Got parameter token:", string(paramBytes))
 	}
 
-	if err != nil || headerToken != *parameter.Parameter.Value {
+	if err != nil || requestToken != *parameter.Parameter.Value {
+		log.Println("Invalid Token")
 		return events.APIGatewayV2CustomAuthorizerSimpleResponse{
 			IsAuthorized: false,
 			Context:      map[string]interface{}{"error": "invalid token"},
 		}, nil
 	}
-
+	log.Println("User Authorized")
 	return events.APIGatewayV2CustomAuthorizerSimpleResponse{
 		IsAuthorized: true,
 		Context:      map[string]interface{}{"user": "authorized"},
