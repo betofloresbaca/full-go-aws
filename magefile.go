@@ -59,6 +59,14 @@ func Bootstrap() error {
 	return cdkBootstrapCmd.Run()
 }
 
+func Destroy() error {
+	fmt.Println("Destroying CDK Stack...")
+	cdkDestroyCmd := exec.Command("cdk", "destroy", "--all", "--force")
+	cdkDestroyCmd.Stdout = os.Stdout
+	cdkDestroyCmd.Stderr = os.Stderr
+	return cdkDestroyCmd.Run()
+}
+
 func buildLambdas() error {
 	lambdas := getLambdaNames()
 	for _, name := range lambdas {

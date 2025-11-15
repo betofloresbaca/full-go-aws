@@ -32,3 +32,16 @@ bin/
 
 # Telegram Examples
 telegram-examples/*
+
+# Security - Files that may contain credentials
+*.curl
+*.http
+*.rest
+*.credentials
+*.secrets
+
+# Backup files that might contain sensitive data
+*.bak
+*.backup
+*.old
+*.tmp

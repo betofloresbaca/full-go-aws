@@ -1,0 +1,89 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "ExtractVariables",
+    "States": {
+        "ExtractVariables": {
+            "Type": "Pass",
+            "Next": "Message Type",
+            "Assign": {
+                "User": "{% $states.input.message.from.id %}",
+                "Chat": "{% $states.input.message.chat.id %}",
+                "Mesage": "{% $states.input.message %}"
+            }
+        },
+        "Message Type": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Comment": "Bot command",
+                    "Next": "Command Type",
+                    "Condition": "{% ($exists($states.input.message.text) and ($states.input.message.entities[0].type) = (\"bot_command\")) %}"
+                },
+                {
+                    "Comment": "Photo",
+                    "Next": "Pass (1)",
+                    "Condition": "{% $exists($states.input.message.photo) %}"
+                }
+            ],
+            "Default": "NoSuppoortedMessageType"
+        },
+        "Command Type": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Condition": "{% ($states.input.message.text) = (\"/start\") %}",
+                    "Comment": "/start",
+                    "Next": "SendWelcomeMessage"
+                },
+                {
+                    "Condition": "{% ($states.input.message.text) = (\"/portfolio\") %}",
+                    "Next": "Pass",
+                    "Comment": "/portfolio"
+                }
+            ],
+            "Default": "NotSupportedCommand"
+        },
+        "SendWelcomeMessage": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Output": "{% $states.result.Payload %}",
+            "Arguments": {
+                "FunctionName": "{% <TELEGRAM_SEND_MESSAGE> %}",
+                "Payload": {
+                    "ChatID": "{% $Chat %}",
+                    "Text": "Bienvenido al chatbot de gastos!"
+                }
+            },
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "Lambda.ServiceException",
+                        "Lambda.AWSLambdaException",
+                        "Lambda.SdkClientException",
+                        "Lambda.TooManyRequestsException"
+                    ],
+                    "IntervalSeconds": 1,
+                    "MaxAttempts": 3,
+                    "BackoffRate": 2,
+                    "JitterStrategy": "FULL"
+                }
+            ],
+            "End": true
+        },
+        "Pass": {
+            "Type": "Pass",
+            "End": true
+        },
+        "NotSupportedCommand": {
+            "Type": "Succeed"
+        },
+        "Pass (1)": {
+            "Type": "Pass",
+            "End": true
+        },
+        "NoSuppoortedMessageType": {
+            "Type": "Succeed"
+        }
+    },
+    "QueryLanguage": "JSONata"
+}

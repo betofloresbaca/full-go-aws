@@ -22,7 +22,7 @@ type PermissionsStackResult struct {
 // PermissionsStack creates IAM roles and policies from a CloudFormation template
 func PermissionsStack(scope constructs.Construct, id string, props *PermissionsStackProps) *PermissionsStackResult {
 	stack := awscdk.NewStack(scope, &id, &props.StackProps)
-	templateFile := "cmd/cdk-infra/stacks/permissions-cfn.yaml"
+	templateFile := "cmd/cdk-infra/resources/permissions-cfn.yaml"
 	cfnTemplate := cloudformationinclude.NewCfnInclude(stack, jsii.String("PermissionsTemplate"), &cloudformationinclude.CfnIncludeProps{
 		TemplateFile: jsii.String(templateFile),
 	})
@@ -30,6 +30,8 @@ func PermissionsStack(scope constructs.Construct, id string, props *PermissionsS
 	roleLogicalIds := []string{
 		"TelegramApiAuthorizerRole",
 		"TelegramApiGatewayRole",
+		"TelegramSendMessageRole",
+		"TelegramBotStateMachineRole",
 	}
 	for _, roleLogicalId := range roleLogicalIds {
 		resource := cfnTemplate.GetResource(jsii.String(roleLogicalId))

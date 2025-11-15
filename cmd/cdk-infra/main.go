@@ -11,18 +11,22 @@ func main() {
 	stackProps := awscdk.StackProps{
 		Env: &awscdk.Environment{},
 	}
-
-	// Create the Permissions stack first
 	permissionsResult := stacks.PermissionsStack(app, "PermissionsStack", &stacks.PermissionsStackProps{
 		StackProps: stackProps,
 	})
 
-	// Create the API stack with dependency on Permissions stack
-	apiStack := stacks.ApiStack(app, "ApiStack", &stacks.ApiStackProps{
+	stepMachineResult := stacks.StepMachineStack(app, "StepMachineStack", &stacks.LambdasStackProps{
 		StackProps: stackProps,
 		Roles:      permissionsResult.Roles,
 	})
-	apiStack.AddDependency(permissionsResult.Stack, jsii.String("Requires IAM roles from PermissionsStack"))
+	stepMachineResult.Stack.AddDependency(permissionsResult.Stack, jsii.String("Requires IAM roles from PermissionsStack"))
+
+	apiStack := stacks.ApiStack(app, "ApiStack", &stacks.ApiStackProps{
+		StackProps:   stackProps,
+		Roles:        permissionsResult.Roles,
+		StateMachine: stepMachineResult.StateMachine,
+	})
+	apiStack.AddDependency(stepMachineResult.Stack, jsii.String("Requires Step Machine Stack to connect the API"))
 
 	app.Synth(nil)
 }
